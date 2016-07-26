@@ -30,17 +30,17 @@ public class QuoteProvider {
   @TableEndpoint(table = QuoteDatabase.QUOTES)
   public static class Quotes{
     @ContentUri(
-        path = Path.QUOTES,
-        type = "vnd.android.cursor.dir/quote"
+            path = Path.QUOTES,
+            type = "vnd.android.cursor.dir/quote"
     )
     public static final Uri CONTENT_URI = buildUri(Path.QUOTES);
 
     @InexactContentUri(
-        name = "QUOTE_ID",
-        path = Path.QUOTES + "/*",
-        type = "vnd.android.cursor.item/quote",
-        whereColumn = QuoteColumns.SYMBOL,
-        pathSegment = 1
+            name = "QUOTE_ID",
+            path = Path.QUOTES + "/*",
+            type = "vnd.android.cursor.item/quote",
+            whereColumn = QuoteColumns.SYMBOL,
+            pathSegment = 1
     )
     public static Uri withSymbol(String symbol){
       return buildUri(Path.QUOTES, symbol);
