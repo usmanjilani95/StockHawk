@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -36,7 +38,10 @@ import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
-public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+import org.w3c.dom.Text;
+
+public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+        SharedPreferences.OnSharedPreferenceChangeListener{
 
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -53,11 +58,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private Context mContext;
   private Cursor mCursor;
   boolean isConnected;
+  private RecyclerView recyclerView;
+  private TextView emptyTextView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = this;
+
     ConnectivityManager cm =
             (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -65,6 +73,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     isConnected = activeNetwork != null &&
             activeNetwork.isConnectedOrConnecting();
     setContentView(R.layout.activity_my_stocks);
+    recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+    emptyTextView = (TextView)findViewById(R.id.listview_stock_empty);
+
     // The intent service is for executing immediate pulls from the Yahoo API
     // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
@@ -72,38 +83,38 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
       if (isConnected){
+        emptyTextView.setVisibility(View.INVISIBLE);
         startService(mServiceIntent);
-        findViewById(R.id.not_connected_layout).setVisibility(View.GONE);
-        findViewById(R.id.connected_layout).setVisibility(View.VISIBLE);
       } else{
-        findViewById(R.id.not_connected_layout).setVisibility(View.VISIBLE);
-        findViewById(R.id.connected_layout).setVisibility(View.GONE);
         networkToast();
       }
     }
-    RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
-              @Override public void onItemClick(View v, int position) {
-                //TODO:
-                // do something on item click
-                Intent intent = new Intent (getApplicationContext (), StockDetailActivity.class);
-                intent.putExtra ("stock_item", ((TextView)v.findViewById(R.id.stock_symbol)).getText());
-                startActivity (intent);
+              @Override
+              public void onItemClick(View v, int position) {
+                Cursor c = mCursorAdapter.getCursor();
+                c.moveToPosition(position);
+                String sym = c.getString(c.getColumnIndex("symbol"));
+                Intent intent = new Intent(getApplicationContext(),line_graph.class);
+                intent.putExtra("symbol",sym);
+                startActivity(intent);
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);
-
 
     FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.attachToRecyclerView(recyclerView);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         if (isConnected){
+          emptyTextView.setVisibility(View.INVISIBLE);
+          recyclerView.setVisibility(View.VISIBLE);
           new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
                   .content(R.string.content_test)
                   .inputType(InputType.TYPE_CLASS_TEXT)
@@ -116,7 +127,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                               new String[] { input.toString() }, null);
                       if (c.getCount() != 0) {
                         Toast toast =
-                                Toast.makeText(MyStocksActivity.this, R.string.stock_already_saved,
+                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
                                         Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                         toast.show();
@@ -136,16 +147,17 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
       }
     });
-
     ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
     mItemTouchHelper = new ItemTouchHelper(callback);
     mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
     if (isConnected){
+      emptyTextView.setVisibility(View.GONE);
+      recyclerView.setVisibility(View.VISIBLE);
       long period = 3600L;
       long flex = 10L;
-      String periodicTag = getString(R.string.periodic_tag);
+      String periodicTag = "periodic";
 
       // create a periodic task to pull stocks once every hour after the app has been opened. This
       // is so Widget data stays up to date.
@@ -166,12 +178,17 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public void onResume() {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    sp.registerOnSharedPreferenceChangeListener(this);
     super.onResume();
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
   }
 
   public void networkToast(){
-    Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+    recyclerView.setVisibility(View.GONE);
+    emptyTextView.setVisibility(View.VISIBLE);
+    emptyTextView.setText(getString(R.string.empty_stock_list) + "." + getString(R.string.network_toast));
+    emptyTextView.setContentDescription(emptyTextView.getText());
   }
 
   public void restoreActionBar() {
@@ -224,6 +241,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
     mCursor = data;
+    ;
   }
 
   @Override
@@ -231,4 +249,27 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(null);
   }
 
+  public void updateEmptyView() {
+    if(mCursorAdapter.getItemCount() ==0) {
+      networkToast();
+    }
+  }
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    int text = sharedPreferences.getInt(key, 0);
+    if(text == StockTaskService.getStatusInvalidInput() || text == StockTaskService.getStatusNoNetworkk()) {
+      if(emptyTextView != null && recyclerView != null) {
+        recyclerView.setVisibility(View.INVISIBLE);
+        emptyTextView.setVisibility(View.VISIBLE);
+        if(text == StockTaskService.getStatusInvalidInput()) {
+          emptyTextView.setText(getString(R.string.empty_stock_list) + "." + getString(R.string.invalid_input_message));
+          emptyTextView.setContentDescription(emptyTextView.getText());
+        } else if (text == StockTaskService.getStatusNoNetworkk()) {
+          emptyTextView.setText(getString(R.string.empty_stock_list) + "." + getString(R.string.network_toast));
+          emptyTextView.setContentDescription(emptyTextView.getText());
+        }
+      }
+    }
+  }
 }
