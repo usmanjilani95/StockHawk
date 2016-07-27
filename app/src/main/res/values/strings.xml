@@ -13,6 +13,9 @@
   <string name="invalid_input_message">Seems like the stock symbol provided is incorrect!</string>
   <string name="empty_stock_list">No stock data is available</string>
   <string name="pref_stock_status_key" translatable="false">stock-status</string>
+  <string name="widget_title">Market Stats</string>
+  <string name="refreshbtn">Refresh Button</string>
+  <string name="stock_empty">No stocks!!</string>
 
   <string name="a11y_bid_price">Bid price: <xliff:g id="stock_value">%1$s</xliff:g></string>
   <string name="a11y_symbol">Symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
