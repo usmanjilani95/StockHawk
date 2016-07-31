@@ -46,7 +46,23 @@
         <provider
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:name="com.sam_chordas.android.stockhawk.data.generated.QuoteProvider"
-            android:exported="false"/>
+            android:exported="false"
+            android:grantUriPermissions="true" />
+        <receiver
+            android:name=".widget.QuoteWidgetProvider"
+            android:label="@string/widget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.sam_chordas.android.stockhawk.SYNC_CLICKED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info"/>
+        </receiver>
+
+        <service
+            android:name=".widget.QuoteWidgetRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>
