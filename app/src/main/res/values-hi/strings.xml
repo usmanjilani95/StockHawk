@@ -1,0 +1,37 @@
+<resources xmlns:xliff="http://schemas.android.com/tools">
+    <string name="app_name">स्टॉक हॉक</string>
+
+    <string name="action_example">Example action</string>
+
+
+    <string name="input_hint">FB</string>
+    <string name="input_prefill"></string>
+
+
+
+    <string name="action_settings">सेटिंग्स</string>
+    <string name="action_change_units">इकाइयों बदलें</string>
+    <string name="symbol_search">प्रतीक खोज</string>
+    <string name="content_test">शेयर प्रतीक की खोज</string>
+    <string name="widget_title">आज बाजार</string>
+    <string name="stock_empty">कोई शेयर मौजूद नहीं</string>
+    <string name="network_toast">कोई इंटरनेट कनेक्शन नहीं!</string>
+    <string name="stock_present">यह शेयर पहले से ही मौजूद है!</string>
+    <string name="stock_error">स्टॉक प्रतीक नहीं मिला</string>
+    <string name="add_stock">शेयर जोड़े</string>
+    <string name="refreshbtn">रीफ़्रेश बटन</string>
+    <string name="stock_chart">स्टॉक चार्ट</string>
+    <string name="retry">पुनः प्रयास करें</string>
+
+
+    <string name="google_app_id" translatable="false">gcmlearning-1290</string>
+
+    <string name="invalid_input_message">स्टॉक प्रतीक नहीं मिल</string>
+    <string name="empty_stock_list">कोई शेयर मौजूद नहीं</string>
+    <string name="pref_stock_status_key" translatable="false">stock-status</string>
+
+    <string name="a11y_bid_price">Bid price: <xliff:g id="stock_value">%1$s</xliff:g></string>
+    <string name="a11y_symbol">Symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
+    <string name="a11y_percent_change">Percentage change: <xliff:g id="percent_change">%1$s</xliff:g></string>
+    <string name="a11y_change">Change: <xliff:g id="change">%1$s</xliff:g></string>
+</resources>
