@@ -30,12 +30,14 @@ public class line_graph extends ActionBarActivity {
 
     LineChart lineChart;
     Uri uri;
-
+    String graph,overtime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_line_graph2);
         Intent i = getIntent();
+        graph=getString(R.string.graph);
+        overtime=getString(R.string.overtime);
         String sym = i.getStringExtra("symbol");
 
         String query = "select * from yahoo.finance.historicaldata where symbol ='" + sym + "' and startDate = '2016-01-01' and endDate = '2016-01-24'";
@@ -95,11 +97,11 @@ public class line_graph extends ActionBarActivity {
         protected void onPostExecute(String s) {
             int animateSeconds = 1000;
             super.onPostExecute(s);
-            LineDataSet dataset = new LineDataSet(entries, "Stock Values over time");
+            LineDataSet dataset = new LineDataSet(entries, overtime);
             dataset.setDrawCircles(true);
             dataset.setDrawValues(true);
             LineData data = new LineData(labels,dataset);
-            lineChart.setDescription("Graph for Stock Values");
+            lineChart.setDescription(graph);
             lineChart.setData(data);
             lineChart.animateY(animateSeconds);
 

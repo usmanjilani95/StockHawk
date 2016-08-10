@@ -18,7 +18,9 @@
   <string name="stock_empty">No stocks!!</string>
   <string name="weather">No weather data available</string>
   <string name="add_stock">Button to add a new stock symbol</string>
-
+  <string name="overtime">Stock Values over time</string>
+    <string name="saved">This stock is already saved!</string>
+  <string name="graph">Graph for Stock Values</string>
   <string name="a11y_bid_price">Bid price: <xliff:g id="stock_value">%1$s</xliff:g></string>
   <string name="a11y_symbol">Symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
   <string name="a11y_percent_change">Percentage change: <xliff:g id="percent_change">%1$s</xliff:g></string>

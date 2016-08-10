@@ -60,12 +60,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   boolean isConnected;
   private RecyclerView recyclerView;
   private TextView emptyTextView;
+  String save;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = this;
-
+    save=getString(R.string.saved);
     ConnectivityManager cm =
             (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -127,7 +128,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                               new String[] { input.toString() }, null);
                       if (c.getCount() != 0) {
                         Toast toast =
-                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                                Toast.makeText(MyStocksActivity.this, save,
                                         Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                         toast.show();
