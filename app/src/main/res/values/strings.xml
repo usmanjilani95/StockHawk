@@ -16,6 +16,8 @@
   <string name="widget_title">Market Stats</string>
   <string name="refreshbtn">Refresh Button</string>
   <string name="stock_empty">No stocks!!</string>
+  <string name="weather">No weather data available</string>
+  <string name="add_stock">Button to add a new stock symbol</string>
 
   <string name="a11y_bid_price">Bid price: <xliff:g id="stock_value">%1$s</xliff:g></string>
   <string name="a11y_symbol">Symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
